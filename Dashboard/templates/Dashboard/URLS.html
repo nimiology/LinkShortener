@@ -1,0 +1,6 @@
+{% for LINK in LINKS %}
+    Title : <a href="{% url 'Dashboard:EditLink' LINK.Slug %}">{{ LINK.Title }}</a>
+    <br>
+    Views:{{ LINK.Views }}
+    <br>
+{% endfor %}

@@ -135,3 +135,40 @@ def EDITUSER(request):
 
         return render(request,'Dashboard/Sample.html',context)
     return redirect(reverse('Dashboard:Signin'))
+
+
+def EDITLINK(request,Slug):
+    if request.user.is_authenticated:
+        link = URL.objects.get(Slug=Slug,Owner__USERNAME__exact=request.user.username)
+        class CreateLink(forms.Form):
+            Title = forms.CharField(widget=forms.TextInput,initial=link.Title)
+            Link = forms.CharField(widget=forms.TextInput, initial=link.Link)
+            def clean_Link(self):
+                LINK = self.cleaned_data['Link']
+                if not 'https://' in LINK or 'http://' in LINK:
+                    raise forms.ValidationError('This is not a link!')
+                return LINK
+
+        FORM = CreateLink(request.POST or None)
+        context = {
+            'FORMS' : FORM,
+            'LINK' : link
+        }
+
+        if FORM.is_valid():
+            DATA = FORM.cleaned_data
+            link.Title = DATA['Title']
+            link.Link = DATA['Link']
+            link.save()
+        context['URL'] = request.get_host()+'/'+link.Slug
+        return render(request,'Dashboard/URL.html',context)
+    return redirect(reverse('Dashboard:Signin'))
+
+
+def ALLUSERLINKS(request):
+    if request.user.is_authenticated:
+        LINKS = URL.objects.filter(Owner__USERNAME__exact=request.user.username)
+        if LINKS.exists():
+            return render(request,'Dashboard/URLS.html',{'LINKS':LINKS})
+        return render(request,'Dashboard/notfound.html')
+    return redirect(reverse('Dashboard:Signin'))
