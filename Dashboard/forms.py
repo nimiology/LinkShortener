@@ -38,8 +38,8 @@ class Login(forms.Form):
 
 
 class ForgetPassword(forms.Form):
-    PASSWORD1 = forms.CharField(widget=forms.PasswordInput)
-    PASSWORD2 = forms.CharField(widget=forms.PasswordInput)
+    PASSWORD1 = forms.CharField(label='Password',widget=forms.PasswordInput)
+    PASSWORD2 = forms.CharField(label='Password Confrim',widget=forms.PasswordInput)
 
     def clean(self):
         DATA = self.cleaned_data

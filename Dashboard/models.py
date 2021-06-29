@@ -29,6 +29,7 @@ def USER_presave(sender,instance,*args,**kwargs):
         user = User.objects.get(email=instance.EMAIL)
         user.username = instance.USERNAME
         user.set_password(instance.PASSWORD)
+        user.save()
     #forget password
     status = True
     while status:

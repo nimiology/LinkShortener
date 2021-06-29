@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 from LinkShortener.models import URL
 from .forms import *
@@ -82,3 +83,55 @@ def DELETELINK(request,Slug):
 
     return redirect(reverse('Dashboard:Signin'))
 
+
+def FORGOTPASSWORD(request,Slug):
+    FORM = ForgetPassword(request.POST or None)
+    context = {
+        'FORMS' : FORM
+    }
+    if FORM.is_valid():
+        DATA = FORM.cleaned_data
+        user = USER.objects.get(PasswordForget=Slug)
+        user.PASSWORD = DATA['PASSWORD1']
+        user.save()
+        return redirect(reverse('Dashboard:Signin'))
+
+    return render(request,'Dashboard/Sample.html',context)
+
+
+def EDITUSER(request):
+    if request.user.is_authenticated:
+        user = USER.objects.get(USERNAME=request.user.username)
+        class FORM(forms.Form):
+            NAME = forms.CharField(widget=forms.TextInput(attrs={'value':user.NAME}))
+            USERNAME = forms.CharField(widget=forms.TextInput(attrs={'value':user.USERNAME}))
+            PASSWORD = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'value':user.PASSWORD}))
+
+            def clean_USERNAME(self):
+                USERNAME = self.cleaned_data['USERNAME']
+                qs = User.objects.filter(username__exact=USERNAME)
+                print(qs)
+                qs = list(qs)
+                qs2 = USER.objects.get(USERNAME=request.user.username)
+                if qs2 in qs:
+                    qs.remove(qs2)
+                if len(qs) != 0:
+                    raise forms.ValidationError('username is already taken')
+                return USERNAME
+
+        FORM = FORM(request.POST or None)
+        context = {
+            'FORMS':FORM
+        }
+        if FORM.is_valid():
+            DATA = FORM.cleaned_data
+            user.USERNAME = DATA['USERNAME']
+            user.NAME = DATA['NAME']
+            user.PASSWORD = DATA['PASSWORD']
+            user.save()
+            context['STATUS'] = 'Changed!'
+            logout(request)
+            return redirect(reverse('Dashboard:Signin'))
+
+        return render(request,'Dashboard/Sample.html',context)
+    return redirect(reverse('Dashboard:Signin'))

@@ -9,4 +9,7 @@ urlpatterns = [
     path('logout',LOGOUT,name='Logout'),
     path('create',CREATELINK,name='Create'),
     path('delete/<Slug>',DELETELINK,name='Delete'),
+    path('forgetpassword/<Slug>',FORGOTPASSWORD,name='ForgetPassword'),
+    path('edit', EDITUSER, name='EditUser'),
+
 ]
