@@ -1,11 +1,13 @@
 from django.db import models
 from django.db.models.signals import pre_save
 from LinkShortener.utils import LinkChecker,SlugGenerator
+from Dashboard.models import USER
 
 class URL(models.Model):
     Title = models.CharField(max_length=1000)
     Link = models.CharField(max_length=1000000, validators=[LinkChecker])
-    Slug = models.SlugField(blank=True)
+    Slug = models.SlugField(blank=True,unique=True)
+    Owner = models.ForeignKey(USER,on_delete=models.CASCADE,related_name='URLS')
     Views = models.IntegerField(default=0)
 
     class Meta:
