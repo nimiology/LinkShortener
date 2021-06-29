@@ -17,7 +17,7 @@ class USER(models.Model):
     Change = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.NAME
+        return self.USERNAME
 
 
 def USER_presave(sender,instance,*args,**kwargs):
