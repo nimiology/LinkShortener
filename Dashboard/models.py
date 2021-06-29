@@ -10,7 +10,7 @@ from Dashboard.utils import slug_genrator
 class USER(models.Model):
     NAME = models.CharField(max_length=1024)
     USERNAME = models.CharField(max_length=1024)
-    EMIL = models.CharField(max_length=2048)
+    EMAIL = models.CharField(max_length=2048)
     PASSWORD = models.CharField(max_length=1024)
     Slug = models.SlugField(unique=True,blank=True)
     PasswordForget = models.SlugField(unique=True)
