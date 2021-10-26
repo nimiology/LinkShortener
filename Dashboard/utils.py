@@ -11,6 +11,4 @@ def slug_generator(cls, start, end):
         qs = cls.objects.filter(slug=randomStr)
         if not qs.exists():
             break
-        else:
-            return randomStr
     return randomStr
