@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import Direct
+
 urlpatterns = [
-    path('<Slug>',Direct),
+    path('<slug>', Direct),
 ]

@@ -1,62 +1,54 @@
 from django import forms
-from .models import USER
+from .models import User
 
 
-class CreateUser(forms.Form):
-    NAME = forms.CharField(widget=forms.TextInput)
-    USERNAME = forms.CharField(widget=forms.TextInput)
-    EMAIL = forms.EmailField(widget=forms.EmailInput)
-    PASSWORD1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    PASSWORD2 = forms.CharField(label='Password Confrim', widget=forms.PasswordInput)
+class CreateUserForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput)
+    email = forms.EmailField(widget=forms.EmailInput)
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password Confirm', widget=forms.PasswordInput)
 
-    def clean_USERNAME(self):
-        USERNAME = self.cleaned_data['USERNAME']
-        qs = USER.objects.filter(USERNAME=USERNAME)
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        qs = User.objects.filter(username=username)
         if qs.exists():
             raise forms.ValidationError('Username is already exists!')
-        return USERNAME
+        return username
 
-    def clean_EMAIL(self):
-        EMAIL = self.cleaned_data['EMAIL']
-        qs = USER.objects.filter(EMAIL=EMAIL)
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        qs = User.objects.filter(email=email)
         if qs.exists():
             raise forms.ValidationError('Email is already exists!')
-        return EMAIL
+        return email
 
     def clean(self):
         DATA = self.cleaned_data
-        if len(DATA['PASSWORD1']) < 8:
+        if len(DATA['password1']) < 8:
             raise forms.ValidationError("Password is to short!")
-        if DATA['PASSWORD1'] != DATA['PASSWORD2']:
+        if DATA['password2'] != DATA['password1']:
             raise forms.ValidationError("Password doesn't match!")
         return DATA
 
 
-class Login(forms.Form):
-    EMAIL = forms.EmailField(widget=forms.EmailInput)
-    PASSWORD = forms.CharField(widget=forms.PasswordInput)
+class LoginForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput)
+    password = forms.CharField(widget=forms.PasswordInput)
 
 
-class ForgetPassword(forms.Form):
-    PASSWORD1 = forms.CharField(label='Password',widget=forms.PasswordInput)
-    PASSWORD2 = forms.CharField(label='Password Confrim',widget=forms.PasswordInput)
+class ForgetPasswordForm(forms.Form):
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password Confirm', widget=forms.PasswordInput)
 
     def clean(self):
         DATA = self.cleaned_data
-        if DATA['PASSWORD1'] != DATA['PASSWORD2']:
-            raise forms.ValidationError("PASSWORD doesn't match1")
-        if len(DATA['PASSWORD1']) < 8:
-            raise forms.ValidationError("PASSWORD must be 8 letter at least!")
-
+        if len(DATA['password1']) < 8:
+            raise forms.ValidationError("Password is to short!")
+        if DATA['password2'] != DATA['password1']:
+            raise forms.ValidationError("Password doesn't match!")
         return DATA
 
 
-class CreateLink(forms.Form):
-    Title = forms.CharField(widget=forms.TextInput)
-    Link = forms.CharField(widget=forms.TextInput)
-
-    def clean_Link(self):
-        LINK = self.cleaned_data['Link']
-        if not 'https://' in LINK or 'http://' in LINK:
-            raise forms.ValidationError('This is not a link!')
-        return LINK
+class URLForm(forms.Form):
+    title = forms.CharField(widget=forms.TextInput)
+    link = forms.URLField(widget=forms.URLInput)

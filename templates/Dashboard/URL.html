@@ -1,0 +1,11 @@
+URL : {{ url }}
+<br>
+Views:{{ link.views }}
+<br>
+link : <a href="{{ link.link }}">{{ link.link }}</a>
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <br>
+    <button type="submit">Submit!</button>
+</form>

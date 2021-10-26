@@ -1,19 +1,18 @@
 from django.urls import path
 from .views import *
 
-
 app_name = 'Dashboard'
 
-
 urlpatterns = [
-    path('signup',CREATEUSER,name='Signup'),
-    path('signin',LOGIN,name='Signin'),
-    path('logout',LOGOUT,name='Logout'),
-    path('create',CREATELINK,name='Create'),
-    path('delete/<Slug>',DELETELINK,name='Delete'),
-    path('forgetpassword/<Slug>',FORGOTPASSWORD,name='ForgetPassword'),
-    path('edit', EDITUSER, name='EditUser'),
-    path('URLS', ALLUSERLINKS, name='ALLUSERLINKS'),
-    path('URLS/<Slug>',EDITLINK,name='EditLink')
+    path('signup/', sign_up_view, name='signup'),
+    path('signin/', sign_in_view, name='signIn'),
+    path('edit/', edit_user, name='editUser'),
+    path('forgetpassword/<slug>/', forget_password, name='forgetPassword'),
+    path('logout/', LOGOUT, name='logout'),
+
+    path('url/create/', create_link, name='createLink'),
+    path('url/<slug>/delete/', delete_link, name='deleteLink'),
+    path('url/all/', user_links, name='links'),
+    path('url/<slug>/edit/', edit_link, name='editLink')
 
 ]

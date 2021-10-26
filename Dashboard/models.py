@@ -1,45 +1,23 @@
 from django.db import models
-from django.db.models.signals import pre_save
-from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
-# Create your models here.
-from Dashboard.utils import slug_genrator
+from Dashboard.utils import slug_generator
 
 
-class USER(models.Model):
-    NAME = models.CharField(max_length=1024)
-    USERNAME = models.CharField(max_length=1024)
-    EMAIL = models.CharField(max_length=2048)
-    PASSWORD = models.CharField(max_length=1024)
-    Slug = models.SlugField(unique=True,blank=True)
-    PasswordForget = models.SlugField(unique=True)
-    Change = models.BooleanField(default=True)
+class ForgetPassword(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='forgetPassword')
+    slug = models.SlugField(blank=True)
 
     def __str__(self):
-        return self.USERNAME
+        return self.user.username
 
 
-def USER_presave(sender,instance,*args,**kwargs):
-    if not instance.Change:
-        user = get_user_model()
-        user.objects.create_user(username=instance.USERNAME,email=instance.EMAIL,password=instance.PASSWORD)
-        instance.Change = True
-    else:
-        user = User.objects.get(email=instance.EMAIL)
-        user.username = instance.USERNAME
-        user.set_password(instance.PASSWORD)
-        user.save()
-    #forget password
-    status = True
-    while status:
-        SLUG = slug_genrator()
-        qs = USER.objects.filter(PasswordForget=SLUG)
-        if not qs.exists():
-            instance.PasswordForget = SLUG
-            status = False
-    #slug
-    instance.Slug = instance.USERNAME
+def UserPreSave(sender, instance, *args, **kwargs):
+    try:
+        ForgetPassword.objects.get(user=instance)
+    except ForgetPassword.DoesNotExist:
+        ForgetPassword(user=instance, slug=slug_generator(ForgetPassword, 50, 150)).save()
 
 
-pre_save.connect(USER_presave,sender=USER)
+post_save.connect(UserPreSave, sender=User)
